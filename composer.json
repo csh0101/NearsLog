@@ -1,6 +1,7 @@
 {
     "name": "nears/nearslog",
     "type": "library",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "NearsLog\\": "src/NearsLog/"
