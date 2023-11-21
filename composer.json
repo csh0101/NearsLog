@@ -1,0 +1,20 @@
+{
+    "name": "nears/nearslog",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "NearsLog\\": "src/NearsLog/"
+        }
+    },
+    "authors": [
+        {
+            "name": "cs"
+        }
+    ],
+    "require": {
+        "monolog/monolog": "^2.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.5"
+    }
+}
