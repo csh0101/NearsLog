@@ -18,24 +18,23 @@ class LogLevel
 class Logger
 {
     protected $logger;
-    
+
     protected $bizName;
 
 
-    public function __construct($bizName="application",$loggerName, $logFilePath, $logLevel = MonologLogger::DEBUG)
+    public function __construct($bizName = "application", $loggerName, $logFilePath, $logLevel = MonologLogger::DEBUG)
     {
         $this->bizName = $bizName;
         $this->logger = new MonologLogger($loggerName);
         $formatter = new JsonFormatter();
         $file_handler = new StreamHandler($logFilePath, $logLevel);
         $file_handler->setFormatter($formatter);
-        ErrorHandler::register($this->logger, [], [], null); 
+        ErrorHandler::register($this->logger, [], [], null);
         $this->logger->pushHandler($file_handler);
         $this->logger->pushProcessor(function ($record) {
             $record['extra']['biz_name'] = $this->bizName;
             return $record;
         });
-        
     }
     public function log(int $level, string $message, array $context = [])
     {

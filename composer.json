@@ -1,5 +1,5 @@
 {
-    "name": "nears/nearslog",
+    "name": "nearslog/nearslog",
     "type": "library",
     "license": "MIT",
     "autoload": {
