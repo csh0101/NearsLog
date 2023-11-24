@@ -7,6 +7,7 @@ use Monolog\Logger as MonoLogger;
 use Monolog\Handler\StreamHandler;
 
 use Monolog\ErrorHandler;
+use Monolog\Handler\RotatingFileHandler;
 
 class Logger
 {
@@ -89,7 +90,7 @@ class Logger
         $logLevel = self::$logLevel ?: MonoLogger::DEBUG;
         $logger = new MonoLogger(self::$loggerName ?: 'default');
         $formatter = new JsonFormatter();
-        $file_handler = new StreamHandler(self::$logFilePath ?: '/tmp/biz.log', $logLevel);
+        $file_handler = new RotatingFileHandler(self::$logFilePath ?: '/tmp/biz.log', 5, $logLevel);
         $file_handler->setFormatter($formatter);
         $logger->pushHandler($file_handler);
         $logger->pushProcessor(function ($record) {
