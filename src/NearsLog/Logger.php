@@ -68,16 +68,6 @@ class Logger
     }
 
 
-    public static function setGlobalLogConfig(string $bizName, string $loggerName, string $filePath, int $logLevel = MonoLogger::INFO)
-    {
-        global $_NEARS_LOG_CONFIG;
-        $_NEARS_LOG_CONFIG["bizName"] = $bizName;
-        $_NEARS_LOG_CONFIG["loggerName"] = $loggerName;
-        $_NEARS_LOG_CONFIG["filePath"] = $filePath;
-        $_NEARS_LOG_CONFIG["logLevel"] = $logLevel;
-        $_NEARS_LOG_CONFIG["requestID"] = bin2hex(random_bytes(16));
-    }
-
     private static function getBizname()
     {
 
@@ -99,7 +89,6 @@ class Logger
     private static function getGlobalLogConfig()
     {
         global $_NEARS_LOG_CONFIG;
-
         self::$loggerName = $_NEARS_LOG_CONFIG["loggerName"];
         self::$logFilePath = $_NEARS_LOG_CONFIG["filePath"];
         self::$logLevel = $_NEARS_LOG_CONFIG["logLevel"];

@@ -8,16 +8,23 @@ class NearsLoggerTest extends TestCase
 
     public function testDefaultLogger()
     {
+
+
         $message = "a test log";
         $context = ["user" => "nears"];
-        $logFilePath = "/tmp/biz.log";
+        $filePath = "/tmp/biz.log";
         $bizName = "default";
         $loggerName = "default";
-
-        Logger::setGlobalLogConfig($bizName, $loggerName, $logFilePath);
+        global $_NEARS_LOG_CONFIG;
+        $_NEARS_LOG_CONFIG = [];
+        $_NEARS_LOG_CONFIG["bizName"] = $bizName;
+        $_NEARS_LOG_CONFIG["loggerName"] = $loggerName;
+        $_NEARS_LOG_CONFIG["filePath"] = $filePath;
+        $_NEARS_LOG_CONFIG["requestID"] = bin2hex(random_bytes(16));
+        $_NEARS_LOG_CONFIG["logLevel"] = 200;
         Logger::Info($message, $context);
 
-        $logContent = file_get_contents($logFilePath);
+        $logContent = file_get_contents($filePath);
         $this->assertStringContainsString($message, $logContent);
         $this->assertStringContainsString($bizName, $logContent);
         $this->assertStringContainsString($loggerName, $logContent);
