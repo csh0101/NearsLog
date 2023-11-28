@@ -4,9 +4,6 @@ namespace NearsLog;
 
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Logger as MonoLogger;
-use Monolog\Handler\StreamHandler;
-
-use Monolog\ErrorHandler;
 use Monolog\Handler\RotatingFileHandler;
 
 class Logger
@@ -38,23 +35,74 @@ class Logger
      * Runtime errors
      */
     public const ERROR = 400;
+
+    // loggerInstance logger instance
     private static $loggerInstance;
-    private static $bizName;
+    // loggerName is recommended to use the name of the env, such as net,com,ext,prod
     private static $loggerName;
+    // logFilePath is the file where the logs output write into,the defaul path is /log/biz.log
     private static $logFilePath;
-    private static $logLevel;
+
+    private static $logLevel = MonoLogger::INFO;
 
 
     private function __construct()
     {
     }
 
-    public static function setConfig($bizName, $loggerName, $logFilePath, $logLevel)
+
+    // GetGlobalRequestID get global request id
+    public static function getGlobalRequestID()
     {
-        self::$bizName = $bizName;
-        self::$loggerName = $loggerName;
-        self::$logFilePath = $logFilePath;
-        self::$logLevel = $logLevel;
+        global $_NEARS_LOG_CONFIG;
+        return $_NEARS_LOG_CONFIG["requestID"];
+    }
+
+    // GetGlobalRequestID set global request id
+    // it recommend to use SetGlobalRequestID in the php entrypoint file, such as index.php
+    public static function setGlobalRequestID($requestID)
+    {
+
+        global $_External_System_Request_ID;
+        $_External_System_Request_ID = $requestID;
+    }
+
+
+    public static function setGlobalLogConfig(string $bizName, string $loggerName, string $filePath, int $logLevel = MonoLogger::INFO)
+    {
+        global $_NEARS_LOG_CONFIG;
+        $_NEARS_LOG_CONFIG["bizName"] = $bizName;
+        $_NEARS_LOG_CONFIG["loggerName"] = $loggerName;
+        $_NEARS_LOG_CONFIG["filePath"] = $filePath;
+        $_NEARS_LOG_CONFIG["logLevel"] = $logLevel;
+        $_NEARS_LOG_CONFIG["requestID"] = bin2hex(random_bytes(16));
+    }
+
+    private static function getBizname()
+    {
+
+        global $_NEARS_LOG_CONFIG;
+        return $_NEARS_LOG_CONFIG["bizName"];
+    }
+
+    private static function getRequestID()
+    {
+
+        global $_NEARS_LOG_CONFIG;
+        global $_External_System_Request_ID;
+        if ($_External_System_Request_ID != null) {
+            return $_External_System_Request_ID;
+        }
+        return $_NEARS_LOG_CONFIG["requestID"];
+    }
+
+    private static function getGlobalLogConfig()
+    {
+        global $_NEARS_LOG_CONFIG;
+
+        self::$loggerName = $_NEARS_LOG_CONFIG["loggerName"];
+        self::$logFilePath = $_NEARS_LOG_CONFIG["filePath"];
+        self::$logLevel = $_NEARS_LOG_CONFIG["logLevel"];
     }
 
     public static function getLogFilePath()
@@ -62,10 +110,6 @@ class Logger
         return self::$logFilePath;
     }
 
-    public static function getBizName()
-    {
-        return self::$bizName;
-    }
 
     public static function getLoggerName()
     {
@@ -87,41 +131,57 @@ class Logger
 
     private static function createLoggerInstance()
     {
-        $logLevel = self::$logLevel ?: MonoLogger::DEBUG;
-        $logger = new MonoLogger(self::$loggerName ?: 'default');
+        self::getGlobalLogConfig();
+        $logger = new MonoLogger(self::$loggerName);
         $formatter = new JsonFormatter();
-        $file_handler = new RotatingFileHandler(self::$logFilePath ?: '/tmp/biz.log', 5, $logLevel);
+        $file_handler = new RotatingFileHandler(self::$logFilePath, 2, self::$logLevel);
         $file_handler->setFormatter($formatter);
         $logger->pushHandler($file_handler);
         $logger->pushProcessor(function ($record) {
-            $record['extra']['biz_name'] = self::$bizName ?: 'default';
+            $record['extra']['biz_name'] = self::getbizName();
             return $record;
         });
         return $logger;
     }
 
+
     public static function debug(string $message, array $context = [])
     {
+        $context["request_id"] = self::getRequestID();
         self::getLogger()->debug($message, $context);
     }
 
     public static function notice(string $message, array $context = [])
     {
+
+        $context["request_id"] = self::getRequestID();
         self::getLogger()->notice($message, $context);
     }
 
     public static function warning(string $message, array $context = [])
     {
+
+        $context["request_id"] = self::getRequestID();
         self::getLogger()->warning($message, $context);
     }
 
     public static function error(string $message, array $context = [])
     {
+
+        $context["request_id"] = self::getRequestID();
         self::getLogger()->error($message, $context);
     }
 
     public static function info(string $message, array $context = [])
     {
+        $context["request_id"] = self::getRequestID();
         self::getLogger()->info($message, $context);
+    }
+
+    public static function exception(string $message, $context = [])
+    {
+        $context["request_id"] = self::getRequestID();
+        $context["exception"] = true;
+        self::getLogger()->error($message, $context);
     }
 }

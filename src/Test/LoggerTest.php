@@ -14,7 +14,7 @@ class NearsLoggerTest extends TestCase
         $bizName = "default";
         $loggerName = "default";
 
-        Logger::setConfig($bizName, $loggerName, $logFilePath, Logger::INFO);
+        Logger::setGlobalLogConfig($bizName, $loggerName, $logFilePath);
         Logger::Info($message, $context);
 
         $logContent = file_get_contents($logFilePath);
