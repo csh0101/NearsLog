@@ -9,19 +9,19 @@ use Monolog\Handler\RotatingFileHandler;
 class Logger
 {
 
-    public const DEBUG = 100;
+    const DEBUG = 100;
 
     /**
      * Interesting events
      *
      * Examples: User logs in, SQL logs.
      */
-    public const INFO = 200;
+    const INFO = 200;
 
     /**
      * Uncommon events
      */
-    public const NOTICE = 250;
+    const NOTICE = 250;
 
     /**
      * Exceptional occurrences that are not errors
@@ -29,12 +29,12 @@ class Logger
      * Examples: Use of deprecated APIs, poor use of an API,
      * undesirable things that are not necessarily wrong.
      */
-    public const WARNING = 300;
+    const WARNING = 300;
 
     /**
      * Runtime errors
      */
-    public const ERROR = 400;
+    const ERROR = 400;
 
     // loggerInstance logger instance
     private static $loggerInstance;
@@ -134,40 +134,40 @@ class Logger
     }
 
 
-    public static function debug(string $message, array $context = [])
+    public static function debug($message,  $context = [])
     {
         $context["request_id"] = self::getRequestID();
         self::getLogger()->debug($message, $context);
     }
 
-    public static function notice(string $message, array $context = [])
+    public static function notice($message,  $context = [])
     {
 
         $context["request_id"] = self::getRequestID();
         self::getLogger()->notice($message, $context);
     }
 
-    public static function warning(string $message, array $context = [])
+    public static function warning($message,  $context = [])
     {
 
         $context["request_id"] = self::getRequestID();
         self::getLogger()->warning($message, $context);
     }
 
-    public static function error(string $message, array $context = [])
+    public static function error($message,  $context = [])
     {
 
         $context["request_id"] = self::getRequestID();
         self::getLogger()->error($message, $context);
     }
 
-    public static function info(string $message, array $context = [])
+    public static function info($message,  $context = [])
     {
         $context["request_id"] = self::getRequestID();
         self::getLogger()->info($message, $context);
     }
 
-    public static function exception(string $message, $context = [])
+    public static function exception($message, $context = [])
     {
         $context["request_id"] = self::getRequestID();
         $context["exception"] = true;
